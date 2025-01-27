@@ -7,7 +7,7 @@ project(raylib-demoTests LANGUAGES CXX)
 # ---- Tests ----
 
 add_executable(raylib-demo_test source/raylib-demo_test.cpp)
-target_link_libraries(raylib-demo_test PRIVATE raylib-demo_lib)
+target_link_libraries(raylib-demo_test PRIVATE raylib-demo-core)
 target_compile_features(raylib-demo_test PRIVATE cxx_std_20)
 
 add_test(NAME raylib-demo_test COMMAND raylib-demo_test)

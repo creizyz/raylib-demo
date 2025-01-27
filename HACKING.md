@@ -137,7 +137,7 @@ fix them respectively. Customization available using the `FORMAT_PATTERNS` and
 
 #### `run-exe`
 
-Runs the executable target `raylib-demo_exe`.
+Runs the executable target `raylib-demo-game`.
 
 #### `spell-check` and `spell-fix`
 

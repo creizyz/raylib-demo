@@ -1,5 +1,5 @@
 install(
-    TARGETS raylib-demo_exe
+    TARGETS raylib-demo-game
     RUNTIME COMPONENT raylib-demo_Runtime
 )
 

@@ -15,29 +15,41 @@ include(cmake/variables.cmake)
 
 # ---- Declare library ----
 
+set(LIB_SOURCE_ROOT "${PROJECT_SOURCE_DIR}/source/core" CACHE FILEPATH "core lib folder")
+file(GLOB_RECURSE LIB_HEADERS "${LIB_SOURCE_ROOT}/*.h" "${LIB_SOURCE_ROOT}/*.hpp")
+file(GLOB_RECURSE LIB_SOURCES "${LIB_SOURCE_ROOT}/*.c" "${LIB_SOURCE_ROOT}/*.cpp")
+
 add_library(
-    raylib-demo_lib OBJECT
-    source/lib.cpp
+    raylib-demo-core OBJECT
+        "${LIB_SOURCES}"
 )
 
 target_include_directories(
-    raylib-demo_lib ${warning_guard}
+    raylib-demo-core ${warning_guard}
     PUBLIC
-    "\$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
+    "\$<BUILD_INTERFACE:${LIB_SOURCE_ROOT}>"
 )
 
-target_compile_features(raylib-demo_lib PUBLIC cxx_std_20)
+target_compile_features(raylib-demo-core PUBLIC cxx_std_20)
 
 # ---- Declare executable ----
 
-add_executable(raylib-demo_exe source/main.cpp)
-add_executable(raylib-demo::exe ALIAS raylib-demo_exe)
+set(EXE_SOURCE_ROOT "${PROJECT_SOURCE_DIR}/source/game" CACHE FILEPATH "game exe folder")
+file(GLOB_RECURSE EXE_HEADERS "${EXE_SOURCE_ROOT}/*.h" "${EXE_SOURCE_ROOT}/*.hpp")
+file(GLOB_RECURSE EXE_SOURCES "${EXE_SOURCE_ROOT}/*.c" "${EXE_SOURCE_ROOT}/*.cpp")
 
-set_property(TARGET raylib-demo_exe PROPERTY OUTPUT_NAME raylib-demo)
+add_executable(raylib-demo-game "${EXE_SOURCES}")
+add_executable(raylib-demo::exe ALIAS raylib-demo-game)
 
-target_compile_features(raylib-demo_exe PRIVATE cxx_std_20)
+target_include_directories(
+        raylib-demo-game ${warning_guard}
+        PUBLIC
+        "\$<BUILD_INTERFACE:${EXE_SOURCE_ROOT}>"
+)
 
-target_link_libraries(raylib-demo_exe PRIVATE raylib-demo_lib)
+set_property(TARGET raylib-demo-game PROPERTY OUTPUT_NAME raylib-demo)
+target_compile_features(raylib-demo-game PRIVATE cxx_std_20)
+target_link_libraries(raylib-demo-game PRIVATE raylib-demo-core)
 
 # ---- Install rules ----
 

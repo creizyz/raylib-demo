@@ -7,10 +7,10 @@ endif()
 
 add_custom_target(
     run-exe
-    COMMAND raylib-demo_exe
+    COMMAND raylib-demo-game
     VERBATIM
 )
-add_dependencies(run-exe raylib-demo_exe)
+add_dependencies(run-exe raylib-demo-game)
 
 option(BUILD_MCSS_DOCS "Build documentation using Doxygen and m.css" OFF)
 if(BUILD_MCSS_DOCS)
