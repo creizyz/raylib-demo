@@ -13,9 +13,13 @@ project(
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
+# ---- Global compilation flags ----
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
+
 # ---- Declare library ----
 
-set(LIB_SOURCE_ROOT "${PROJECT_SOURCE_DIR}/source/core" CACHE FILEPATH "core lib folder")
+set(LIB_SOURCE_ROOT "${PROJECT_SOURCE_DIR}/source/core" CACHE PATH "core lib folder")
 file(GLOB_RECURSE LIB_HEADERS "${LIB_SOURCE_ROOT}/*.h" "${LIB_SOURCE_ROOT}/*.hpp")
 file(GLOB_RECURSE LIB_SOURCES "${LIB_SOURCE_ROOT}/*.c" "${LIB_SOURCE_ROOT}/*.cpp")
 
@@ -31,6 +35,13 @@ target_include_directories(
 )
 
 target_compile_features(raylib-demo-core PUBLIC cxx_std_20)
+target_link_libraries(raylib-demo-core PUBLIC
+        -lraylib
+        -lm
+        -ldl
+        -pthread
+        -lGL
+)
 
 # ---- Declare executable ----
 
@@ -49,7 +60,9 @@ target_include_directories(
 
 set_property(TARGET raylib-demo-game PROPERTY OUTPUT_NAME raylib-demo)
 target_compile_features(raylib-demo-game PRIVATE cxx_std_20)
-target_link_libraries(raylib-demo-game PRIVATE raylib-demo-core)
+target_link_libraries(raylib-demo-game PRIVATE
+        raylib-demo-core
+)
 
 # ---- Install rules ----
 
