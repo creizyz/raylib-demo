@@ -7,6 +7,42 @@
 constexpr auto SCREEN_WIDTH = 800;
 constexpr auto SCREEN_HEIGHT = 450;
 
+struct FixedAtlas
+{
+    const Texture2D atlas;
+    const int frame_width;
+    const int frame_height;
+
+    size_t frame;
+
+    FixedAtlas(const Image & image, int width, int height)
+        : atlas{ LoadTextureFromImage(image) }
+        , frame_width{ atlas.width / width }
+        , frame_height{ atlas.height / height }
+        , frame{ 0u }
+    { }
+
+    ~FixedAtlas()
+    {
+        UnloadTexture(atlas);
+    }
+
+    void draw(const Vector2 & position, Color tint)
+    {
+        DrawTextureRec(
+            atlas,
+            {
+                static_cast<float>(frame * frame_width),
+                0,
+                static_cast<float>(frame_width),
+                static_cast<float>(frame_height)
+            },
+            position,
+            tint
+        );
+    }
+};
+
 auto main() -> int
 {
     auto const lib = library {};
@@ -16,9 +52,14 @@ auto main() -> int
     // Initialization
     //--------------------------------------------------------------------------------------
 
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - basic window");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib demo");
 
-    SetTargetFPS(60);  // Set our game to run at 60 frames-per-second
+    const auto image = LoadImage("../assets/sprites/knight-run.png");
+    auto animation = FixedAtlas{ image, 10, 1 };
+    UnloadImage(image);
+
+    SetTargetFPS(30);  // Set our game to run at 60 frames-per-second
+
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -29,17 +70,14 @@ auto main() -> int
         // TODO: Update your variables here
         //----------------------------------------------------------------------------------
 
+        animation.frame += 1;
+
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
-
-        DrawText("Congrats! You created your first window!",
-                 190,
-                 200,
-                 20,
-                 LIGHTGRAY);
+        animation.draw({ 0, 0 }, WHITE);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
