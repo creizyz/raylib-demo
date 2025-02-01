@@ -50,6 +50,15 @@ struct FixedAtlas
     }
 };
 
+enum class State
+{
+    IDLE,
+    WALKING,
+    RUNNING,
+    JUMPING,
+    FALLING,
+};
+
 auto main() -> int
 {
     auto const lib = library {};
@@ -65,6 +74,11 @@ auto main() -> int
     auto animation = FixedAtlas{ image, 10, 1 };
     UnloadImage(image);
 
+    State state = State::IDLE;
+    Vector2 position = { 0.f, 0.f };
+    Vector2 velocity = { 0.f, 0.f };
+    float direction = 1.f;
+
     SetTargetFPS(24);  // Set our game to run at 60 frames-per-second
 
     //--------------------------------------------------------------------------------------
@@ -77,14 +91,48 @@ auto main() -> int
         // TODO: Update your variables here
         //----------------------------------------------------------------------------------
 
-        animation.frame += 1;
+        auto dT = GetFrameTime();
+
+        // update state
+        if (IsKeyDown(KEY_LEFT) && !IsKeyDown(KEY_RIGHT))
+        {
+            state = State::WALKING;
+            direction = -1.f;
+        }
+        else if (IsKeyDown(KEY_RIGHT) && !IsKeyDown(KEY_LEFT))
+        {
+            state = State::WALKING;
+            direction = 1.f;
+        }
+        else
+        {
+            state = State::IDLE;
+        }
+
+        // update velocity
+        switch (state)
+        {
+            case State::WALKING:
+                velocity.x = 250.f;
+                animation.frame += 1;
+                break;
+            case State::IDLE:
+                velocity.x = 0.f;
+                animation.frame = 2;
+                break;
+            default:
+                break;
+        }
+
+        // update position
+        position.x += direction * velocity.x * dT;
 
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
-        animation.draw({ 0, 0 }, { 4.f, 4.f }, WHITE);
+        animation.draw(position, { 4.f, 4.f }, WHITE);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
