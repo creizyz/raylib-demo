@@ -2,7 +2,7 @@
 #include <string>
 
 #include "lib.hpp"
-#include "raylib.h"
+#include "raylib/raylib.h"
 
 constexpr auto SCREEN_WIDTH = 800;
 constexpr auto SCREEN_HEIGHT = 450;
@@ -27,9 +27,9 @@ struct FixedAtlas
         UnloadTexture(atlas);
     }
 
-    void draw(const Vector2 & position, Color tint)
+    void draw(const Vector2 & position, const Vector2 & scale, Color tint)
     {
-        DrawTextureRec(
+        DrawTexturePro(
             atlas,
             {
                 static_cast<float>(frame * frame_width),
@@ -37,7 +37,14 @@ struct FixedAtlas
                 static_cast<float>(frame_width),
                 static_cast<float>(frame_height)
             },
-            position,
+            {
+                position.x,
+                position.y,
+                frame_width * scale.x,
+                frame_height * scale.y
+            },
+            { 0, 0 },
+            0.f,
             tint
         );
     }
@@ -54,11 +61,11 @@ auto main() -> int
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib demo");
 
-    const auto image = LoadImage("../assets/sprites/knight-run.png");
+    const auto image = LoadImage("assets/sprites/knight-run.png");
     auto animation = FixedAtlas{ image, 10, 1 };
     UnloadImage(image);
 
-    SetTargetFPS(30);  // Set our game to run at 60 frames-per-second
+    SetTargetFPS(24);  // Set our game to run at 60 frames-per-second
 
     //--------------------------------------------------------------------------------------
 
@@ -77,7 +84,7 @@ auto main() -> int
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
-        animation.draw({ 0, 0 }, WHITE);
+        animation.draw({ 0, 0 }, { 4.f, 4.f }, WHITE);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
